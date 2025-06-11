@@ -1,0 +1,17 @@
+{
+  "name": "il-toolkit-builder",
+  "version": "1.0.0",
+  "description": "Web toolkit builder",
+  "repository": "",
+  "author": "Web Implementation Guidelines Group",
+  "license": "NCSA",
+  "scripts": {
+    "build": "eleventy"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@11ty/eleventy": "^0.12.1",
+    "markdown-it": "^11.0.0",
+    "markdown-it-attrs": "^3.0.3"
+  }
+}
