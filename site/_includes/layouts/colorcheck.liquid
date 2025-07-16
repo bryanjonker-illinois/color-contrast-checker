@@ -39,9 +39,9 @@
                     <button class='ilw-button' id='checknonefore'>De-select All</button>
                 </div>
                 <ul id='foreground'>
-                <li class="ils-input-entry-compact"><label for='customcolor-foreground'>Custom Color Hex Value: </label><input type='text' id='customcolor-foreground' style="width: 80px;" value="#"></li>
+                <li class="ils-input-entry-compact"><label id='customcolor-foreground-label' for='customcolor-foreground'>Custom Foreground Color: </label><input type='color' id='customcolor-foreground' style="width: 80px; padding: 0;"></li>
                 {%- for color in colors %}
-                    <li class="ils-input-entry-checkbox"><label for="fore-{{ color.value }}">{{ color.name }} ({{ color.value }})<span class="swatch" role="presentation" style="background-color: {{ color.value }};"></span></label><input type="checkbox" data-name="{{ color.name }}" value="{{ color.value }}" id="fore-{{ color.value }}"></li>
+                    <li class="ils-input-entry-checkbox"><label for="fore-{{ color.value }}">{{ color.name }} ({{ color.value }}){{ color.note }}<span class="swatch" role="presentation" style="background-color: {{ color.value }};"></span></label><input type="checkbox" data-name="{{ color.name }}" value="{{ color.value }}" id="fore-{{ color.value }}"></li>
                 {% endfor -%}
                 </ul>
             </div>
@@ -52,7 +52,7 @@
                     <button class='ilw-button' id='checknoneback'>De-select All</button>
                 </div>
                 <ul id='background'>
-                <li class="ils-input-entry-compact"><label for='customcolor-background'>Custom Color Hex Value: </label><input type='text' id='customcolor-background' style="width: 80px;" value="#"></li>
+                <li class="ils-input-entry-compact"><label id='customcolor-background-label' for='customcolor-background'>Custom Background Color: </label><input type='color' id='customcolor-background' style="width: 80px; padding: 0;"></li>
                 {%- for color in colors %}
                     <li class="ils-input-entry-checkbox"><label for="back-{{ color.value }}">{{ color.name }} ({{ color.value }})<span class="swatch" role="presentation" style="background-color: {{ color.value }};"></span></label><input type="checkbox" data-name="{{ color.name }}" value="{{ color.value }}" id="back-{{ color.value }}"></li>
                 {% endfor -%}
@@ -64,9 +64,9 @@
             <h3>Test Options</h3>
             <p></p>
             <p>
-                <label for="displayOptions">Display Options: </label><select id="displayOptions">
+                <label for="displayOptions">Display Options: </label><select id="displayOptions" style="width: 400px;">
                     <option value="all">Show all tests</option>
-                    <option value="pass" selected>Show all passing tests</option>
+                    <option value="pass">Show all passing tests</option>
                     <option value="full">Show only passing tests for all sizes</option>
                 </select>
             </p>
@@ -77,7 +77,7 @@
         </div>
     </ilw-content>
     <ilw-content width="page">
-        <h2 id='results-area'>Test Results</h2>
+        <h2 id='results-area'></h2>
         <p><a href="#testrun">Back to Test Run Options</a></p>
         <div id='colors'></div>
     </ilw-content>

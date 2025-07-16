@@ -4,10 +4,15 @@ const bodyText = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed d
 document.addEventListener("DOMContentLoaded", function(event) {
     document.getElementById('btnTestColor').addEventListener('click', checkColorsFull);
 
-    document.getElementById('checkallfore').addEventListener('click', function() { document.querySelectorAll('#foreground input').forEach(i => i.checked = true)});
-    document.getElementById('checkallback').addEventListener('click', function() { document.querySelectorAll('#background input').forEach(i => i.checked = true)});
-    document.getElementById('checknonefore').addEventListener('click', function() { document.querySelectorAll('#foreground input').forEach(i => i.checked = false)});
-    document.getElementById('checknoneback').addEventListener('click', function() { document.querySelectorAll('#background input').forEach(i => i.checked = false)});
+    document.querySelectorAll('#background input').forEach(i => i.addEventListener('change', validateRunTest));
+    document.querySelectorAll('#foreground input').forEach(i => i.addEventListener('change', validateRunTest));
+    document.getElementById('customcolor-background').addEventListener('change', validateRunTest);
+    document.getElementById('customcolor-foreground').addEventListener('change', validateRunTest);
+
+    document.getElementById('checkallfore').addEventListener('click', function() { document.querySelectorAll('#foreground input').forEach(i => i.checked = true); validateRunTest();});
+    document.getElementById('checkallback').addEventListener('click', function() { document.querySelectorAll('#background input').forEach(i => i.checked = true); validateRunTest();});
+    document.getElementById('checknonefore').addEventListener('click', function() { document.querySelectorAll('#foreground input').forEach(i => i.checked = false); document.getElementById('customcolor-foreground').value = '#000000'; validateRunTest(); });
+    document.getElementById('checknoneback').addEventListener('click', function() { document.querySelectorAll('#background input').forEach(i => i.checked = false); document.getElementById('customcolor-background').value = '#000000'; validateRunTest(); });
 
     const urlParams = new URLSearchParams(window.location.search);
     if ((urlParams.get('fore') || urlParams.get('customfore')) && (urlParams.get('back') || urlParams.get('customback'))) {
@@ -28,8 +33,35 @@ document.addEventListener("DOMContentLoaded", function(event) {
             document.getElementById('customcolor-background').value = "#" + urlParams.get('customback');
         }
         checkColorsFull();
+    } else {
+        validateRunTest();
     }
 });
+
+function validateRunTest() {
+    let button = document.getElementById('btnTestColor');
+    if (document.getElementById('customcolor-foreground').value.length > 1 && document.getElementById('customcolor-foreground').value != '#000000') {
+        document.getElementById('customcolor-foreground-label').innerHTML = `Custom Foreground Color (${document.getElementById('customcolor-foreground').value}): `;
+    } else {
+        document.getElementById('customcolor-foreground-label').innerHTML = 'Custom Foreground Color: ';
+    }
+    if (document.getElementById('customcolor-background').value.length > 1 && document.getElementById('customcolor-background').value != '#000000') {
+        document.getElementById('customcolor-background-label').innerHTML = `Custom Background Color (${document.getElementById('customcolor-background').value}): `;
+    } else {
+        document.getElementById('customcolor-background-label').innerHTML = 'Custom Background Color: ';
+    }
+    if (document.querySelectorAll('#background input:checked').length > 0 && document.querySelectorAll('#foreground input:checked').length > 0) {
+        button.disabled = false;
+    } else if (document.querySelectorAll('#background input:checked').length > 0 && document.getElementById('customcolor-foreground').value.length > 1 && document.getElementById('customcolor-foreground').value != '#000000') {
+        button.disabled = false;
+    } else if (document.querySelectorAll('#foreground input:checked').length > 0 && document.getElementById('customcolor-background').value.length > 1 && document.getElementById('customcolor-background').value != '#000000') {
+        button.disabled = false;
+    } else if (document.getElementById('customcolor-foreground').value.length > 1 && document.getElementById('customcolor-background').value.length > 1 && document.getElementById('customcolor-foreground').value != '#000000' && document.getElementById('customcolor-background').value != '#000000') {
+        button.disabled = false;
+    } else {    
+        button.disabled = true;
+    }
+}
 
 function checkColorsFull() {
     var backgroundList = Array.from(document.querySelectorAll('#background input:checked')).map(e => e.value);
@@ -46,17 +78,20 @@ function checkColors(backgroundList, foregroundList, customForegroundColor, cust
     let backgroundLink = backgroundList.map(b => b.replace('#', '')).join(',');
     document.getElementById('link').innerHTML = `<a href='https://accessibility.itpartners.illinois.edu/colorcheck.html?fore=${foregroundLink}&back=${backgroundLink}&customfore=${customForegroundColor.replace('#', '')}&customback=${customBackgroundColor.replace('#', '')}#results-area'>Link to results</a>`;
 
-    if (customForegroundColor && customForegroundColor != '' && customForegroundColor != '#') {
+    if (customForegroundColor && customForegroundColor != '' && customForegroundColor != '#000000') {
         foregroundList.push(customForegroundColor);
     }
-    if (customBackgroundColor && customBackgroundColor != '' && customBackgroundColor != '#') {
+    if (customBackgroundColor && customBackgroundColor != '' && customBackgroundColor != '#000000') {
         backgroundList.push(customBackgroundColor);
     }
     colors.innerHTML = '';
     let noHits = true;
+    let numberTestsRun = 0;
+    let numberTestsDisplayed = 0;
     for (let backgroundIndex = 0; backgroundIndex < backgroundList.length; backgroundIndex++) {
         for (let foregroundIndex = 0; foregroundIndex < foregroundList.length; foregroundIndex++) {
             if (foregroundList[foregroundIndex] != backgroundList[backgroundIndex]) {
+                numberTestsRun++;
                 let foregroundHex = foregroundList[foregroundIndex];
                 let foregroundElement = document.getElementById('fore-' + foregroundHex);
                 let foregroundName = 'Custom Color ' + foregroundHex;
@@ -74,12 +109,15 @@ function checkColors(backgroundList, foregroundList, customForegroundColor, cust
                 let title = foregroundName + ' on ' + backgroundName;
                 if (data.AA == "pass") {
                     addColorsToGridAll(title, foregroundHex, backgroundHex, data.ratio);
+                    numberTestsDisplayed++;
                     noHits = false;
                 } else if (data.AALarge == "pass" && (displayOption == 'pass' || displayOption == 'all')) {
                     addColorsToGridLarge(title, foregroundHex, backgroundHex, data.ratio);
+                    numberTestsDisplayed++;
                     noHits = false;
                 } else if (displayOption == 'all') {
                     addColorsToGridNone(title, foregroundHex, backgroundHex, data.ratio);
+                    numberTestsDisplayed++;
                     noHits = false;
                 }
             }
@@ -88,6 +126,7 @@ function checkColors(backgroundList, foregroundList, customForegroundColor, cust
     if (noHits) {
        colors.innerHTML = '<p>No tests passed</p>'; 
     }
+    document.getElementById('results-area').innerHTML = `Test Results (${numberTestsRun} tests run, ${numberTestsDisplayed} tests displayed)`;
     document.getElementById('results-area').scrollIntoView();
 
 }
@@ -104,7 +143,7 @@ function addColorsToGridAll(title, foreground, background, ratio) {
     }
     let div = document.createElement('div');
     let divTitle = document.createElement('h3');
-    divTitle.innerHTML = `${title} - All Sizes`;
+    divTitle.innerHTML = `${title} - Accessible for all sizes`;
     let divRatio = document.createElement('p');
     divRatio.innerHTML = `(ratio ${ratio}:1)`;
     let divExamples = document.createElement('div');
@@ -169,7 +208,7 @@ function addColorsToGridNone(title, foreground, background, ratio) {
     }
     let div = document.createElement('div');
     let divTitle = document.createElement('h3');
-    divTitle.innerHTML = `${title} - Inaccessible`;
+    divTitle.innerHTML = `${title} - Inaccessible for all sizes`;
     let divRatio = document.createElement('p');
     divRatio.innerHTML = `(ratio ${ratio}:1)`;
     let divExamples = document.createElement('p');

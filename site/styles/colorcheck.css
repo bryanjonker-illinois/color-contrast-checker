@@ -2,6 +2,7 @@
     display: flex;
     padding: 20px;
     column-gap: 20px;
+    --ils-input-form-label-width: 320px;
 }
 
 .flex > div {

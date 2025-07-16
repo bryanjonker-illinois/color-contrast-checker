@@ -6,7 +6,7 @@ permalink: "colorcheck.html"
 
 # Color Checker
 
-This is a simple color checker ported from the Toolkit Builder used to test [new Illinois-branded colors](https://cdn.brand.illinois.edu/colors.html) with AA accessibility. Note the following:
+This is a simple color checker ported from the Toolkit Builder used to test [new Illinois-branded colors](https://cdn.brand.illinois.edu/colors.html) with AA accessibility. For the test to run, you must choose one of the preset colors in the foreground or background, and it will not run if the foreground color and background color is the same. Note the following:
 
 * While these colors meet legal accessibility requirements, you should have actual people test the final color combination
 * A higher ratio means an easier reading experience, and you should strive for a high contrast ratio
